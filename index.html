@@ -56,22 +56,74 @@
 
         </footer>
         <script>
-            let WorkSpace = Blockly.inject('Blocky', {
+            let workSpace = Blockly.inject('Blocky', {
                 toolbox: document.body.children[0].children[0]
             });
 
-            WorkSpace.addChangeListener((e) => {
-                let Blocks = [];
-                WorkSpace.getAllBlocks().forEach((a) => {
-                    let tmp = {
-                        "Parents": (a.parentBlock_ === null) ? "null": a.parentBlock_.id,
-                        "Id": a.id,
-                        "ValeurName": a.inputList[0].fieldRow[0].value_
-                    };
-                    Blocks.push(tmp);
+            class Block{
+                constructor(){
+                    this._parentIdentifiant = "";
+                    this._valeurName = "";
+                    this._identifiant = "";
+                    this._nextIdentifiant = "";
+                }
+            }
+
+            class BlockJson{
+                constructor(valeur = ""){
+                    this._valeurName = valeur;
+                    this._valeurs = [];
+                }
+            }
+
+            workSpace.addChangeListener((event) => {
+                let blocks = [];
+                workSpace.getAllBlocks().forEach((value) => {
+                    let blockTemps = new Block();
+                    blockTemps._parentIdentifiant = (value.parentBlock_ != null) ? value.parentBlock_.id : "null";
+                    blockTemps._identifiant = value.id;
+                    blockTemps._valeurName = value.inputList[0].fieldRow[0].value_;
+                    blockTemps._nextIdentifiant = ((value.nextConnection != null)&&(value.nextConnection.targetConnection != null)) ? value.nextConnection.targetConnection.sourceBlock_.id : "null";
+                    blocks.push(blockTemps);
+                });
+                console.log(blocks);
+
+                let blocksJson = [], indexParentsBlocksJson = 0, identifiantsParents = [], identifiantsNext = [];
+                let blacksList = [], idtemp = [];
+
+                let isNotIn = (identifiant, list) => {
+                    let result = true;
+                    list.forEach((value) => {
+                        if(identifiant === value){
+                            result = false;
+                        }
+                    });
+                    return result;
+                };
+                let modifyParents = (identifiant, identifiantParents, list) => {
+                    let result = identifiantParents;
+                    list.forEach((value) => {
+                        if((identifiant === value[0])&&(identifiantParents === value[1])){
+                            result = value[2];
+                        }
+                    });
+                    return result;
+                };
+
+                let nexts = [];
+                blocks.forEach((value, index, array) => {
+                    if(value._nextIdentifiant != "null"){
+                        nexts.push([value._nextIdentifiant, value._identifiant]);
+                    }
                 });
 
-                console.log(Blocks);
+
+                /*blocks.forEach((value, index, array) => {
+                    blocks[index]._parentIdentifiant = modifyParents(value._identifiant, value._parentIdentifiant, nexts);
+                });*/
+
+
+
             });
         </script>
     </body>

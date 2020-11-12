@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Blocky JSON :</title>
+        <script src="blocky/blockly_compressed.js"></script>
+        <script src="blocky/blocks_compressed.js"></script>
+        <script src="blocky/msg/js/fr.js"></script>
+        <script>
+            Blockly.Blocks['triple_equal'] = {
+                init: function(){
+                    this.appendStatementInput('===')
+                        .appendField('===');
+                }
+            };
+
+            Blockly.Blocks['function'] = {
+                init: function(){
+                    this.setNextStatement(true);
+                    this.setPreviousStatement(true);
+
+                    this.appendDummyInput()
+                        .appendField(
+                            new Blockly.FieldTextInput('Nom variable'),
+                            'var'
+                        );
+
+                    this.appendStatementInput('Values')
+                        .appendField('valeurs');
+                }
+            };
+
+            Blockly.Blocks['arguments'] = {
+                init: function(){
+                    this.setNextStatement(true);
+                    this.setPreviousStatement(true);
+
+                    this.appendDummyInput()
+                        .appendField(
+                            new Blockly.FieldTextInput('Arguments'),
+                            'arguments'
+                        );
+                }
+            };
+        </script>
+    </head>
+    <body>
+        <main id="Blocky" style="height: 480px; width: 600px;">
+            <xml id="toolbox" style="display: none">
+                <block type="triple_equal"></block>
+                <block type="function"></block>
+                <block type="arguments"></block>
+            </xml>
+        </main>
+        <footer>
+
+        </footer>
+        <script>
+            let WorkSpace = Blockly.inject('Blocky', {
+                toolbox: document.body.children[0].children[0]
+            });
+
+            WorkSpace.addChangeListener((e) => {
+                let Blocks = [];
+                WorkSpace.getAllBlocks().forEach((a) => {
+                    let tmp = {
+                        "Parents": (a.parentBlock_ === null) ? "null": a.parentBlock_.id,
+                        "Id": a.id,
+                        "ValeurName": a.inputList[0].fieldRow[0].value_
+                    };
+                    Blocks.push(tmp);
+                });
+
+                console.log(Blocks);
+            });
+        </script>
+    </body>
+</html>

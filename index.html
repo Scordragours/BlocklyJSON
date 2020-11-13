@@ -88,6 +88,37 @@
                     }
                 });
                 console.log(nexts);
+
+                let ends = [];
+                blocks.forEach((value, index, array) => {
+                    if((value._nextIdentifiant === "null")&&(index != 0)){
+                        ends.push(value._identifiant);
+                    }
+                });
+                console.log(ends);
+
+                let returnIdentifiants = (identifiant) => {
+                    let result;
+                    blocks.forEach((value, index, array) => {
+                        if(identifiant === value._identifiant){
+                            result = value;
+                        }
+                      });
+                      return result;
+                };
+
+                let tableau = [];
+                ends.forEach((value, index, array) => {
+                    let test = value;
+                    let tmp = [];
+                    console.log(returnIdentifiants(test._parentIdentifiant));
+                    while(returnIdentifiants(test._parentIdentifiant)._nextIdentifiant === test._identifiant){
+                        test = returnIdentifiants(test._parentIdentifiant);
+                        tmp.push(test._identifiant);
+                    }
+                    tableau.push(tmp);
+                });
+                console.log(tableau);
             });
         </script>
     </body>

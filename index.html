@@ -91,15 +91,7 @@
                 let blocksJson = [], indexParentsBlocksJson = 0, identifiantsParents = [], identifiantsNext = [];
                 let blacksList = [], idtemp = [];
 
-                let isNotIn = (identifiant, list) => {
-                    let result = true;
-                    list.forEach((value) => {
-                        if(identifiant === value){
-                            result = false;
-                        }
-                    });
-                    return result;
-                };
+
                 let modifyParents = (identifiant, identifiantParents, list) => {
                     let result = identifiantParents;
                     list.forEach((value) => {
@@ -116,6 +108,7 @@
                         nexts.push([value._nextIdentifiant, value._identifiant]);
                     }
                 });
+                console.log(nexts);
 
 
                 /*blocks.forEach((value, index, array) => {

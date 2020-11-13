@@ -69,13 +69,6 @@
                 }
             }
 
-            class BlockJson{
-                constructor(valeur = ""){
-                    this._valeurName = valeur;
-                    this._valeurs = [];
-                }
-            }
-
             workSpace.addChangeListener((event) => {
                 let blocks = [];
                 workSpace.getAllBlocks().forEach((value) => {
@@ -88,20 +81,6 @@
                 });
                 console.log(blocks);
 
-                let blocksJson = [], indexParentsBlocksJson = 0, identifiantsParents = [], identifiantsNext = [];
-                let blacksList = [], idtemp = [];
-
-
-                let modifyParents = (identifiant, identifiantParents, list) => {
-                    let result = identifiantParents;
-                    list.forEach((value) => {
-                        if((identifiant === value[0])&&(identifiantParents === value[1])){
-                            result = value[2];
-                        }
-                    });
-                    return result;
-                };
-
                 let nexts = [];
                 blocks.forEach((value, index, array) => {
                     if(value._nextIdentifiant != "null"){
@@ -109,14 +88,6 @@
                     }
                 });
                 console.log(nexts);
-
-
-                /*blocks.forEach((value, index, array) => {
-                    blocks[index]._parentIdentifiant = modifyParents(value._identifiant, value._parentIdentifiant, nexts);
-                });*/
-
-
-
             });
         </script>
     </body>

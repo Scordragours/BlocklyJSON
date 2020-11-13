@@ -97,25 +97,47 @@
                 });
                 console.log(ends);
 
-                let returnIdentifiants = (identifiant) => {
-                    let result;
-                    blocks.forEach((value, index, array) => {
+                let returnIdentifiants = (identifiant, list) => {
+                    let result = new Block();
+                    list.forEach((value, index, array) => {
                         if(identifiant === value._identifiant){
                             result = value;
                         }
-                      });
-                      return result;
+                    });
+                    return result;
+                };
+
+                let returnTable = (node, nodePrecedent) => {
+                    let tmp;
+                    if(node._identifiant != "null"){
+                        tmp = returnTable(nodePrecedent, returnIdentifiants(nodePrecedent._parentIdentifiant, blocks));
+                        if(nodePrecedent._nextIdentifiant === node._identifiant){
+                            tmp.unshift(ends[0]._identifiant);
+                        }else{
+                            tmp = [
+                                node._identifiant,
+                                tmp
+                            ]
+                        }
+                    }
+                    return tmp;
                 };
 
                 let tableau = [];
                 ends.forEach((value, index, array) => {
-                    let test = value;
-                    let tmp = [];
-                    console.log(returnIdentifiants(test._parentIdentifiant));
-                    while(returnIdentifiants(test._parentIdentifiant)._nextIdentifiant === test._identifiant){
-                        test = returnIdentifiants(test._parentIdentifiant);
-                        tmp.push(test._identifiant);
-                    }
+                    let test = returnIdentifiants(value, blocks);
+
+                    let tmp = returnTable(value, returnIdentifiants(value._parentIdentifiant, blocks));
+                    /*while(test._parentIdentifiant === "null"){
+                        if(returnIdentifiants(test._parentIdentifiant, blocks)._nextIdentifiant === test._identifiant){
+                            tmp.unshift(test._identifiant);
+                        }else{
+                            tmp = [
+                                ends[0]._identifiant,
+                                tmp
+                            ]
+                        }
+                    }*/
                     tableau.push(tmp);
                 });
                 console.log(tableau);

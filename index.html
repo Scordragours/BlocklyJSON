@@ -53,7 +53,10 @@
             </xml>
         </main>
         <footer>
+            <article id="JSON">
 
+            </article>
+            <a id="JsonDownload" download="Blocks.json">Télécharger le fichier</a>
         </footer>
         <script>
             let workSpace = Blockly.inject('Blocky', {
@@ -62,85 +65,79 @@
 
             class Block{
                 constructor(){
-                    this._parentIdentifiant = "";
-                    this._valeurName = "";
-                    this._identifiant = "";
-                    this._nextIdentifiant = "";
+                    this._pId = "";
+                    this._val = "";
+                    this._id = "";
+                    this._nId = "";
                 }
             }
 
+            /***
+             *
+             * @param id
+             * @param blocks
+             * @return {string}
+             */
+            let getAllIndex = (id, blocks) => {
+                let indexes = [];
+                blocks.forEach((value, index, array) => {
+                    if(value._pId === id){
+                        indexes.push(index);
+                    }
+                });
+                return indexes;
+            };
+            /***
+             *
+             * @param block
+             * @param isEnd
+             * @param blocks
+             * @returns {string}
+             */
+            let ShowKeyValues = (block, isEnd, blocks) => {
+                let childs = getAllIndex(block._id, blocks);
+                let Text = "";
+                if((childs.length === 0)&&(blocks.findIndex(element => element._id === block._id) !== 0)){
+                    Text += "\""+ block._val +"\"";
+                }else{
+                    Text += "{\n";
+                    Text += "\t\""+ block._val +"\": [\n";
+                    childs.forEach((value, index, array) => {
+                        Text += ShowKeyValues(blocks[value], (childs.length - 1 === index) ? true : false, blocks);
+                    });
+                    Text += "\t]\n"
+                    Text += "}";
+                }
+
+                if(!isEnd){
+                    Text += ",";
+                }
+
+                return Text +"\n";
+            };
+
             workSpace.addChangeListener((event) => {
                 let blocks = [];
-                workSpace.getAllBlocks().forEach((value) => {
+                workSpace.getAllBlocks().forEach((value, index, array) => {
                     let blockTemps = new Block();
-                    blockTemps._parentIdentifiant = (value.parentBlock_ != null) ? value.parentBlock_.id : "null";
-                    blockTemps._identifiant = value.id;
-                    blockTemps._valeurName = value.inputList[0].fieldRow[0].value_;
-                    blockTemps._nextIdentifiant = ((value.nextConnection != null)&&(value.nextConnection.targetConnection != null)) ? value.nextConnection.targetConnection.sourceBlock_.id : "null";
+                    blockTemps._pId = (value.parentBlock_ != null) ? value.parentBlock_.id : "null";
+                    blockTemps._id = value.id;
+                    blockTemps._val = value.inputList[0].fieldRow[0].value_;
+                    blockTemps._nId = ((value.nextConnection != null)&&(value.nextConnection.targetConnection != null)) ? value.nextConnection.targetConnection.sourceBlock_.id : "null";
                     blocks.push(blockTemps);
                 });
-                console.log(blocks);
 
-                let nexts = [];
                 blocks.forEach((value, index, array) => {
-                    if(value._nextIdentifiant != "null"){
-                        nexts.push([value._nextIdentifiant, value._identifiant]);
-                    }
+                   if(value._nId !== "null"){
+                       let tmp = blocks.findIndex(element => (element._id === value._nId));
+                       blocks[tmp]._pId = value._pId;
+                   }
                 });
-                console.log(nexts);
 
-                let ends = [];
-                blocks.forEach((value, index, array) => {
-                    if((value._nextIdentifiant === "null")&&(index != 0)){
-                        ends.push(value._identifiant);
-                    }
-                });
-                console.log(ends);
-
-                let returnIdentifiants = (identifiant, list) => {
-                    let result = new Block();
-                    list.forEach((value, index, array) => {
-                        if(identifiant === value._identifiant){
-                            result = value;
-                        }
-                    });
-                    return result;
-                };
-
-                let returnTable = (node, nodePrecedent) => {
-                    let tmp;
-                    if(node._identifiant != "null"){
-                        tmp = returnTable(nodePrecedent, returnIdentifiants(nodePrecedent._parentIdentifiant, blocks));
-                        if(nodePrecedent._nextIdentifiant === node._identifiant){
-                            tmp.unshift(ends[0]._identifiant);
-                        }else{
-                            tmp = [
-                                node._identifiant,
-                                tmp
-                            ]
-                        }
-                    }
-                    return tmp;
-                };
-
-                let tableau = [];
-                ends.forEach((value, index, array) => {
-                    let test = returnIdentifiants(value, blocks);
-
-                    let tmp = returnTable(value, returnIdentifiants(value._parentIdentifiant, blocks));
-                    /*while(test._parentIdentifiant === "null"){
-                        if(returnIdentifiants(test._parentIdentifiant, blocks)._nextIdentifiant === test._identifiant){
-                            tmp.unshift(test._identifiant);
-                        }else{
-                            tmp = [
-                                ends[0]._identifiant,
-                                tmp
-                            ]
-                        }
-                    }*/
-                    tableau.push(tmp);
-                });
-                console.log(tableau);
+                let Data = ShowKeyValues(blocks[0], true, blocks);
+                let baliseA = document.getElementById("JsonDownload");
+                document.getElementById("JSON").innerText = Data;
+                baliseA.href = window.URL.createObjectURL(new Blob([Data], {type: "application/json"}));
             });
         </script>
     </body>

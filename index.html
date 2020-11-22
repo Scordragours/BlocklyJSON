@@ -6,139 +6,34 @@
         <script src="blocky/blockly_compressed.js"></script>
         <script src="blocky/blocks_compressed.js"></script>
         <script src="blocky/msg/js/fr.js"></script>
-        <script>
-            Blockly.Blocks['triple_equal'] = {
-                init: function(){
-                    this.appendStatementInput('===')
-                        .appendField('===');
-                }
-            };
-
-            Blockly.Blocks['function'] = {
-                init: function(){
-                    this.setNextStatement(true);
-                    this.setPreviousStatement(true);
-
-                    this.appendDummyInput()
-                        .appendField(
-                            new Blockly.FieldTextInput('Nom variable'),
-                            'var'
-                        );
-
-                    this.appendStatementInput('Values')
-                        .appendField('valeurs');
-                }
-            };
-
-            Blockly.Blocks['arguments'] = {
-                init: function(){
-                    this.setNextStatement(true);
-                    this.setPreviousStatement(true);
-
-                    this.appendDummyInput()
-                        .appendField(
-                            new Blockly.FieldTextInput('Arguments'),
-                            'arguments'
-                        );
-                }
-            };
-        </script>
+        <script src="blocklyRules.js"></script>
+        <link rel="stylesheet" href="index.css" />
+        <link rel="stylesheet" href="prism.css" />
     </head>
     <body>
-        <main id="Blocky" style="height: 480px; width: 600px;">
-            <xml id="toolbox" style="display: none">
-                <block type="triple_equal"></block>
-                <block type="function"></block>
-                <block type="arguments"></block>
-            </xml>
+        <header>
+            Blockly JSON
+        </header>
+        <main>
+            <section id="Blocky">
+                <xml id="Toolbox" style="display: none">
+                    <block type="triple_equal"></block>
+                    <block type="function"></block>
+                    <block type="arguments"></block>
+                </xml>
+            </section>
+            <section>
+                <article>
+                    <pre>
+                        <code id="JSON" class="language-json"></code>
+                    </pre>
+                </article>
+                <article>
+                    <a id="JsonDownload" download="Blocks.json">Télécharger le fichier</a>
+                </article>
+            </section>
         </main>
-        <footer>
-            <article id="JSON">
-
-            </article>
-            <a id="JsonDownload" download="Blocks.json">Télécharger le fichier</a>
-        </footer>
-        <script>
-            let workSpace = Blockly.inject('Blocky', {
-                toolbox: document.body.children[0].children[0]
-            });
-
-            class Block{
-                constructor(){
-                    this._pId = "";
-                    this._val = "";
-                    this._id = "";
-                    this._nId = "";
-                }
-            }
-
-            /***
-             *
-             * @param id
-             * @param blocks
-             * @return {string}
-             */
-            let getAllIndex = (id, blocks) => {
-                let indexes = [];
-                blocks.forEach((value, index, array) => {
-                    if(value._pId === id){
-                        indexes.push(index);
-                    }
-                });
-                return indexes;
-            };
-            /***
-             *
-             * @param block
-             * @param isEnd
-             * @param blocks
-             * @returns {string}
-             */
-            let ShowKeyValues = (block, isEnd, blocks) => {
-                let childs = getAllIndex(block._id, blocks);
-                let Text = "";
-                if((childs.length === 0)&&(blocks.findIndex(element => element._id === block._id) !== 0)){
-                    Text += "\""+ block._val +"\"";
-                }else{
-                    Text += "{\n";
-                    Text += "\t\""+ block._val +"\": [\n";
-                    childs.forEach((value, index, array) => {
-                        Text += ShowKeyValues(blocks[value], (childs.length - 1 === index) ? true : false, blocks);
-                    });
-                    Text += "\t]\n"
-                    Text += "}";
-                }
-
-                if(!isEnd){
-                    Text += ",";
-                }
-
-                return Text +"\n";
-            };
-
-            workSpace.addChangeListener((event) => {
-                let blocks = [];
-                workSpace.getAllBlocks().forEach((value, index, array) => {
-                    let blockTemps = new Block();
-                    blockTemps._pId = (value.parentBlock_ != null) ? value.parentBlock_.id : "null";
-                    blockTemps._id = value.id;
-                    blockTemps._val = value.inputList[0].fieldRow[0].value_;
-                    blockTemps._nId = ((value.nextConnection != null)&&(value.nextConnection.targetConnection != null)) ? value.nextConnection.targetConnection.sourceBlock_.id : "null";
-                    blocks.push(blockTemps);
-                });
-
-                blocks.forEach((value, index, array) => {
-                   if(value._nId !== "null"){
-                       let tmp = blocks.findIndex(element => (element._id === value._nId));
-                       blocks[tmp]._pId = value._pId;
-                   }
-                });
-
-                let Data = ShowKeyValues(blocks[0], true, blocks);
-                let baliseA = document.getElementById("JsonDownload");
-                document.getElementById("JSON").innerText = Data;
-                baliseA.href = window.URL.createObjectURL(new Blob([Data], {type: "application/json"}));
-            });
-        </script>
+        <script src="blockly.js"></script>
+        <script src="prism.js"></script>
     </body>
 </html>

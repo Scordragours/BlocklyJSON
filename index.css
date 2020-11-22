@@ -1,0 +1,31 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+header{
+    height: 120px;
+    line-height: 120px;
+    text-align: center;
+    font-size: 4em;
+    background-color: #888888;
+}
+
+main{
+    display: flex;
+}
+
+section{
+    min-width: 400px;
+    width: 50%;
+    height: 400px;
+}
+
+#JSON{
+    height: 370px;
+    overflow-y: scroll;
+}
+#JsonDownload{
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+}

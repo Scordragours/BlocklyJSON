@@ -62,46 +62,43 @@ let workSpace = Blockly.inject('Blocky', {
 
 // Makes the callback in case of a change.
 workSpace.addChangeListener((event) => {
+    /*if(event.type === Blockly.Events.MOVE){
+        if(workSpace.getTopBlocks().length !== 0){
+            workSpace.getTopBlocks().forEach((value, index, array) => {
+                if((value.type !== "triple_equal") || (index !== 0)){
+                    workSpace.removeBlockById(value.id);
+                    document.getElementById().remove();
+                }
+            });
+        }
+    }*/
     let blocks = [];
 
-    if(workSpace.getTopBlocks().length == 0){
-        return null;
-    }
-
-    // Clear the workspace.
     workSpace.getTopBlocks().forEach((value, index, array) => {
-        if(index !== 0){
-            workSpace.removeTopBlock(value);
-        }else{
-            if(value.type !== "==="){
-                workSpace.removeTopBlock(value);
-            }else{
-                // Recovers blockages in the workspace, and transforms them into Block.
-                workSpace.getAllBlocks().forEach((value, index, array) => {
-                    let blockTemps = new Block();
-                    blockTemps._pId = (value.parentBlock_ != null) ? value.parentBlock_.id : "null";
-                    blockTemps._id = value.id;
-                    blockTemps._val = value.inputList[0].fieldRow[0].value_;
-                    blockTemps._nId = ((value.nextConnection != null)&&(value.nextConnection.targetConnection != null)) ? value.nextConnection.targetConnection.sourceBlock_.id : "null";
-                    blocks.push(blockTemps);
-                });
+        // Recovers blockages in the workspace, and transforms them into Block.
+        workSpace.getAllBlocks().forEach((value, index, array) => {
+            let blockTemps = new Block();
+            blockTemps._pId = (value.parentBlock_ != null) ? value.parentBlock_.id : "null";
+            blockTemps._id = value.id;
+            blockTemps._val = value.inputList[0].fieldRow[0].value_;
+            blockTemps._nId = ((value.nextConnection != null)&&(value.nextConnection.targetConnection != null)) ? value.nextConnection.targetConnection.sourceBlock_.id : "null";
+            blocks.push(blockTemps);
+        });
 
-                // Modify the parent blocks in certain blocks that are wrong.
-                blocks.forEach((value, index, array) => {
-                    if(value._nId !== "null"){
-                        let tmp = blocks.findIndex(element => (element._id === value._nId));
-                        blocks[tmp]._pId = value._pId;
-                    }
-                });
-
-                // Create the text to display.
-                let Data = ShowKeyValues(blocks[0], true, blocks);
-
-                // Creates the link with the json file.
-                let baliseA = document.getElementById("JsonDownload");
-                document.getElementById("JSON").innerText = Data;
-                baliseA.href = window.URL.createObjectURL(new Blob([Data], {type: "application/json"}));
+        // Modify the parent blocks in certain blocks that are wrong.
+        blocks.forEach((value, index, array) => {
+            if(value._nId !== "null"){
+                let tmp = blocks.findIndex(element => (element._id === value._nId));
+                blocks[tmp]._pId = value._pId;
             }
-        }
+        });
+
+        // Create the text to display.
+        let Data = ShowKeyValues(blocks[0], true, blocks);
+
+        // Creates the link with the json file.
+        let baliseA = document.getElementById("JsonDownload");
+        document.getElementById("JSON").innerText = Data;
+        baliseA.href = window.URL.createObjectURL(new Blob([Data], {type: "application/json"}));
     });
 });

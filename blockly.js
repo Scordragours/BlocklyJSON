@@ -62,6 +62,9 @@ let workSpace = Blockly.inject('Blocky', {
 
 // Makes the callback in case of a change.
 workSpace.addChangeListener((event) => {
+    /*
+    * Récuperation du type de bloque lorque un bloque est à la racine du workspace.
+    * */
     /*if(event.type === Blockly.Events.MOVE){
         if(workSpace.getTopBlocks().length !== 0){
             workSpace.getTopBlocks().forEach((value, index, array) => {
